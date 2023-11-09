@@ -45,9 +45,12 @@ classes = load_classes("data/coco.names")
 
 # load network
 model = Darknet(args.cfgfile)
+print("Load model success.")
 
 # load weight
 model.loadWeight(args.weightsfile)
+print("Load weights success.")
+
 
 model.netInfo["height"] = args.reso
 inpImgDim = int(model.netInfo["height"])

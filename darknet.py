@@ -125,9 +125,6 @@ def createModules(blocks):
 
     return (netInfo, moduleList)
 
-'''blocks = parseCfg("cfg/yolov3.cfg")
-print(createModules(blocks))'''
-
 class Darknet(nn.Module):
     def __init__(self, cfgFile):
         super(Darknet, self).__init__()
@@ -173,7 +170,7 @@ class Darknet(nn.Module):
                 outputs[i] = x
 
             elif moduleType == 'yolo':
-                anchors = self.moduleList[i][0].anchors
+                anchors = self.moduleList[i][0].anchors  # 6,7,8 like array
                 
                 inpImgDim = int(self.netInfo['height'])
 
@@ -181,9 +178,11 @@ class Darknet(nn.Module):
 
                 x = x.data
                 x = predictTransform(x, inpImgDim, anchors, num_classes, False)
+
                 if not write:
                     detections = x
                     write = 1
+                    
                 else:
                     detections = torch.cat((detections, x), 1)
 
@@ -269,21 +268,3 @@ class Darknet(nn.Module):
 
                 conv_weights = conv_weights.view_as(conv.weight.data)
                 conv.weight.data.copy_(conv_weights)
-
-        
-'''def get_test_input():
-    img = cv2.imread("dog-cycle-car.png")
-    img = cv2.resize(img, (416,416))          #Resize to the input dimension
-    img_ =  img[:,:,::-1].transpose((2,0,1))  # BGR -> RGB | H X W C -> C X H X W 
-    img_ = img_[np.newaxis,:,:,:]/255.0       #Add a channel at 0 (for batch) | Normalise
-    img_ = torch.from_numpy(img_).float()     #Convert to float
-    img_ = Variable(img_)                     # Convert to Variable
-    return img_
-'''
-
-'''model = Darknet("cfg/yolov3.cfg")
-model.loadWeight("yolov3.weights")
-inp = get_test_input()
-pred = model(inp, torch.cuda.is_available())
-print (pred)
-print (pred.size())'''
